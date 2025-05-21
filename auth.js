@@ -11,7 +11,7 @@ const firebaseConfig = {
   measurementId: "G-KJPF6CQTG9"
 };
 
-// Initialize Firebase
+// Initialize Firebase - using compatibility version for older syntax
 firebase.initializeApp(firebaseConfig);
 
 // Authentication module
@@ -21,6 +21,8 @@ const auth = {
     
     // Initialize Firebase Auth
     init: function() {
+        console.log("Auth initialization started");
+        
         // Set up auth state observer
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
@@ -52,7 +54,13 @@ const auth = {
         // Set up login button if on login page
         const loginBtn = document.getElementById('google-login');
         if (loginBtn) {
-            loginBtn.addEventListener('click', () => this.signInWithGoogle());
+            console.log("Login button found, adding event listener");
+            loginBtn.addEventListener('click', () => {
+                console.log("Login button clicked");
+                this.signInWithGoogle();
+            });
+        } else {
+            console.log("Login button not found on this page");
         }
         
         // Set up logout button
@@ -64,14 +72,17 @@ const auth = {
     
     // Sign in with Google
     signInWithGoogle: function() {
+        console.log("Attempting Google sign in");
         const provider = new firebase.auth.GoogleAuthProvider();
         
         // Show login status
         const loginStatus = document.getElementById('login-status');
         if (loginStatus) loginStatus.classList.remove('hidden');
         
+        // Try to sign in with popup
         firebase.auth().signInWithPopup(provider)
             .then(result => {
+                console.log("Google sign-in successful");
                 // Get payment verification token from URL params (if coming from payment)
                 const urlParams = new URLSearchParams(window.location.search);
                 const paymentToken = urlParams.get('token');
@@ -87,9 +98,15 @@ const auth = {
             .catch(error => {
                 console.error('Google sign-in error:', error);
                 
+                // If popup fails, try redirect method
+                if (error.code === 'auth/popup-blocked') {
+                    console.log("Popup blocked, trying redirect method");
+                    firebase.auth().signInWithRedirect(provider);
+                }
+                
                 if (loginStatus) loginStatus.classList.add('hidden');
                 
-                alert('Authentication failed. Please try again.');
+                alert('Authentication failed: ' + error.message + '. Please try again.');
             });
     },
     
@@ -174,5 +191,17 @@ const auth = {
 
 // Initialize auth when document is ready
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM loaded, initializing auth");
     auth.init();
+});
+
+// Check for redirect result (for redirect sign-in method)
+firebase.auth().getRedirectResult().then(function(result) {
+    if (result.user) {
+        console.log('Sign-in redirect result:', result.user.email);
+        // User signed in with redirect
+        window.location.href = 'download.html';
+    }
+}).catch(function(error) {
+    console.error('Redirect sign-in error:', error);
 });
