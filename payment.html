@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment | Secure File Download</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Payment</h1>
+        <p>Complete your payment to access the file.</p>
+        <div id="payment-container">
+            <!-- Payment options will be loaded here -->
+            <div class="payment-option">
+                <h3>Premium File Access</h3>
+                <p>Price: $XX.XX</p>
+                <button id="payment-button" class="btn">Pay Now</button>
+            </div>
+        </div>
+        <div id="payment-status" class="hidden">
+            <p>Processing payment...</p>
+        </div>
+    </div>
+    
+    <!-- In production, load these scripts from CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/payment.js"></script>
+</body>
+</html>
