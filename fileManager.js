@@ -1,9 +1,9 @@
 const fileManager = {
     // Current file data
     fileData: {
-        name: 'premium-file.zip',
-        size: '15 MB',
-        storageRef: 'files/premium-file.zip'
+        name: 'RPS.py',
+        size: '61.28 KB',
+        storageRef: 'files/RPS.p'
     },
     
     init: function() {
