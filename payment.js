@@ -6,26 +6,40 @@ const payment = {
     config: {
         price: 5.99,
         currency: 'USD',
-        productName: 'RPS.py Access'
+        productName: 'Neural Rock Paper Scissors'
     },
     
     init: function() {
+        console.log("Payment initialization started");
+        
         // Set up payment button
         const paymentButton = document.getElementById('payment-button');
         if (paymentButton) {
+            console.log("Payment button found, adding event listener");
+            
             // Update button text with price
             paymentButton.textContent = `Pay $${this.config.price.toFixed(2)} Now`;
             
             // Add click event
-            paymentButton.addEventListener('click', () => this.processPayment());
+            paymentButton.addEventListener('click', () => {
+                console.log("Payment button clicked");
+                this.processPayment();
+            });
+        } else {
+            console.log("Payment button not found on this page");
         }
     },
     
     // Process payment (mock implementation - connect to real payment gateway in production)
     processPayment: function() {
+        console.log("Processing payment");
+        
         // Show payment status
         const paymentStatus = document.getElementById('payment-status');
-        if (paymentStatus) paymentStatus.classList.remove('hidden');
+        if (paymentStatus) {
+            paymentStatus.classList.remove('hidden');
+            console.log("Payment status shown");
+        }
         
         // Mock payment processing - In production, redirect to payment gateway
         setTimeout(() => {
@@ -33,6 +47,7 @@ const payment = {
             
             // Generate mock payment token
             const paymentToken = this.generatePaymentToken();
+            console.log('Generated payment token:', paymentToken);
             
             // Redirect to login page with payment token
             window.location.href = `login.html?token=${paymentToken}`;
@@ -48,5 +63,6 @@ const payment = {
 
 // Initialize payment when document is ready
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM loaded, initializing payment");
     payment.init();
 });
