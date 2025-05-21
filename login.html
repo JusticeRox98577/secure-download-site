@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Secure File Download</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Link to stylesheet - flat structure -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="payment-header">
+        <div class="container payment-header-content">
+            <h1>Account Verification</h1>
+            <p>Sign in with your Google account to access your download</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="payment-container">
+            <div class="payment-title">
+                <h2>Verify Your Account</h2>
+            </div>
+            
+            <div class="payment-body" style="text-align: center;">
+                <div style="margin: 2rem 0;">
+                    <div style="font-size: 4rem; color: #4285F4; margin-bottom: 1.5rem;">
+                        <i class="fab fa-google"></i>
+                    </div>
+                    <p style="margin-bottom: 2rem; color: #7f8c8d;">You're almost there! Sign in with Google to verify your account and access your download.</p>
+                    <button id="google-login" class="btn btn-google">
+                        <i class="fab fa-google" style="margin-right: 8px;"></i> Sign in with Google
+                    </button>
+                </div>
+                
+                <div id="login-status" class="hidden" style="margin-top: 1.5rem; padding: 1rem; background-color: #f8f9fa; border-radius: 8px;">
+                    <div class="loader" style="border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #3498db; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto 0.5rem auto; display: block;"></div>
+                    <p>Verifying your account...</p>
+                </div>
+                
+                <div style="margin-top: 2rem; border-top: 1px solid #e9ecef; padding-top: 1.5rem;">
+                    <a href="index.html" style="color: #7f8c8d; text-decoration: none; display: inline-flex; align-items: center;">
+                        <i class="fas fa-arrow-left" style="margin-right: 5px;"></i>
+                        Return to home page
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Terms of Service</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Contact Us</a>
+            </div>
+            <p>&copy; 2025 Secure File Download. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+    
+    <!-- App scripts - flat structure -->
+    <script src="auth.js"></script>
+    
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .btn-google {
+            background: #4285F4;
+            color: white;
+        }
+        
+        .btn-google:hover {
+            background: #3367D6;
+        }
+    </style>
+</body>
+</html>
