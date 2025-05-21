@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | RPS.py Download</title>
+    <title>Login | Neural Rock Paper Scissors Download</title>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Link to stylesheet - flat structure -->
@@ -29,7 +29,7 @@
                         <i class="fab fa-google"></i>
                     </div>
                     <p style="margin-bottom: 2rem; color: #7f8c8d;">You're almost there! Sign in with Google to verify your account and access your download.</p>
-                    <button id="google-login" class="btn btn-google">
+                    <button id="google-login" class="btn btn-google" onclick="handleSignIn()">
                         <i class="fab fa-google" style="margin-right: 8px;"></i> Sign in with Google
                     </button>
                 </div>
@@ -47,6 +47,12 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Auth Status -->
+    <div id="auth-status" style="text-align: center; margin: 2rem 0; padding: 1rem; background-color: #f8f9fa; border-radius: 8px; display: none;">
+        <p>Authentication Status: <span id="status-message">Not started</span></p>
+        <div id="status-details" style="margin-top: 1rem; font-size: 0.9rem; color: #7f8c8d;"></div>
     </div>
 
     <!-- Footer -->
@@ -90,7 +96,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 100px;
+            height: 200px;
             background: rgba(0,0,0,0.8);
             color: #2ecc71;
             font-family: monospace;
@@ -114,43 +120,159 @@
             logEntry.textContent = new Date().toISOString().substr(11, 8) + ': ' + message;
             debug.appendChild(logEntry);
             debug.scrollTop = debug.scrollHeight;
-            console.log(message);
+            console.log("LOGIN: " + message);
+            
+            // Also update auth status if visible
+            updateAuthStatus(message);
         }
         
-        // Show debug console in development
+        // Auth status display
+        function updateAuthStatus(message) {
+            const statusDetails = document.getElementById('status-details');
+            if (statusDetails) {
+                const entry = document.createElement('div');
+                entry.textContent = new Date().toISOString().substr(11, 8) + ': ' + message;
+                statusDetails.appendChild(entry);
+            }
+        }
+        
+        function setAuthStatus(status) {
+            const statusMessage = document.getElementById('status-message');
+            if (statusMessage) {
+                statusMessage.textContent = status;
+            }
+        }
+        
+        // Show debug console with key combo
         document.addEventListener('keydown', function(e) {
-            // Press D key to toggle debug console
+            // Press D key and Ctrl to toggle debug console
             if (e.key === 'd' && e.ctrlKey) {
                 const debug = document.getElementById('debug-console');
                 debug.style.display = debug.style.display === 'none' ? 'block' : 'none';
             }
+            
+            // Press S key and Ctrl to toggle auth status
+            if (e.key === 's' && e.ctrlKey) {
+                const status = document.getElementById('auth-status');
+                status.style.display = status.style.display === 'none' ? 'block' : 'none';
+            }
         });
         
-        // Additional event listener as a fallback
-        document.addEventListener('DOMContentLoaded', function() {
-            const loginBtn = document.getElementById('google-login');
-            if (loginBtn) {
-                loginBtn.addEventListener('click', function() {
-                    debugLog('Login button clicked via inline handler');
-                    const provider = new firebase.auth.GoogleAuthProvider();
-                    
-                    // Show login status
-                    const loginStatus = document.getElementById('login-status');
-                    if (loginStatus) loginStatus.classList.remove('hidden');
-                    
-                    firebase.auth().signInWithPopup(provider).then(function(result) {
-                        debugLog('Google sign-in successful');
-                        window.location.href = 'download.html';
-                    }).catch(function(error) {
-                        debugLog('Error: ' + error.message);
-                        if (error.code === 'auth/popup-blocked') {
-                            debugLog('Popup blocked, trying redirect');
-                            firebase.auth().signInWithRedirect(provider);
-                        }
+        // Direct sign-in function (inline handler)
+        function handleSignIn() {
+            debugLog('Sign-in button clicked via inline handler');
+            setAuthStatus('Starting...');
+            
+            // Show login status
+            const loginStatus = document.getElementById('login-status');
+            if (loginStatus) loginStatus.classList.remove('hidden');
+            
+            try {
+                // Initialize Firebase if not already initialized
+                if (!firebase.apps.length) {
+                    debugLog('Firebase not initialized, initializing...');
+                    firebase.initializeApp({
+                        apiKey: "AIzaSyC3WX8RCWYUwpoE4DYlg8JbTaN4MQnwKHg",
+                        authDomain: "nrps-sell.firebaseapp.com",
+                        projectId: "nrps-sell",
+                        storageBucket: "nrps-sell.firebasestorage.app",
+                        messagingSenderId: "696676277086",
+                        appId: "1:696676277086:web:f90d7ed9bc0272cddb4dcf",
+                        measurementId: "G-KJPF6CQTG9"
                     });
+                }
+                
+                const provider = new firebase.auth.GoogleAuthProvider();
+                debugLog('Provider created, attempting sign in with popup');
+                setAuthStatus('Attempting popup...');
+                
+                firebase.auth().signInWithPopup(provider).then(function(result) {
+                    debugLog('Google sign-in successful via inline handler');
+                    setAuthStatus('Success!');
+                    
+                    // Get payment token from URL if present
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const paymentToken = urlParams.get('token');
+                    
+                    if (paymentToken) {
+                        debugLog('Payment token found: ' + paymentToken);
+                        // Store verification - use auth module if available
+                        if (typeof auth !== 'undefined' && auth.storePaymentVerification) {
+                            auth.storePaymentVerification(result.user.uid, paymentToken);
+                        } else {
+                            debugLog('Auth module not available for storing payment token');
+                        }
+                    }
+                    
+                    // Force redirect to download page
+                    debugLog('Redirecting to download page...');
+                    setTimeout(function() {
+                        window.location.href = 'download.html';
+                    }, 1000);
+                    
+                }).catch(function(error) {
+                    debugLog('Error in popup: ' + error.code + ' - ' + error.message);
+                    setAuthStatus('Error: ' + error.code);
+                    
+                    if (error.code === 'auth/popup-blocked') {
+                        debugLog('Popup blocked, trying redirect method');
+                        setAuthStatus('Popup blocked, trying redirect...');
+                        firebase.auth().signInWithRedirect(provider);
+                    } else {
+                        // Show error and hide loader
+                        if (loginStatus) loginStatus.classList.add('hidden');
+                        alert('Authentication error: ' + error.message + '. Please try again.');
+                    }
                 });
-            } else {
-                debugLog('Login button not found!');
+            } catch (e) {
+                debugLog('Exception in sign-in handler: ' + e.message);
+                setAuthStatus('Exception: ' + e.message);
+                if (loginStatus) loginStatus.classList.add('hidden');
+                alert('An error occurred: ' + e.message);
+            }
+        }
+        
+        // Check if we are coming back from a redirect
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLog('Page loaded, checking for redirect result');
+            
+            try {
+                firebase.auth().getRedirectResult().then(function(result) {
+                    if (result.user) {
+                        debugLog('Redirect sign-in successful: ' + result.user.email);
+                        setAuthStatus('Redirect successful');
+                        
+                        // Redirect to download page
+                        debugLog('Redirecting to download page after redirect sign-in');
+                        setTimeout(function() {
+                            window.location.href = 'download.html';
+                        }, 1000);
+                    } else {
+                        debugLog('No redirect result or already processed');
+                    }
+                }).catch(function(error) {
+                    debugLog('Error checking redirect result: ' + error.message);
+                    setAuthStatus('Redirect error: ' + error.code);
+                });
+            } catch (e) {
+                debugLog('Exception checking redirect: ' + e.message);
+            }
+            
+            // Check if currently signed in
+            try {
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    debugLog('User already signed in: ' + user.email);
+                    setAuthStatus('Already signed in');
+                    
+                    // Redirect to download page
+                    debugLog('Already signed in, redirecting to download page');
+                    setTimeout(function() {
+                        window.location.href = 'download.html';
+                    }, 1000);
+                }
+            } catch (e) {
+                debugLog('Exception checking current user: ' + e.message);
             }
         });
     </script>
