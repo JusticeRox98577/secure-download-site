@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Secure File Download</title>
+    <title>Login | RPS.py Download</title>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Link to stylesheet - flat structure -->
@@ -57,14 +57,14 @@
                 <a href="#">Privacy Policy</a>
                 <a href="#">Contact Us</a>
             </div>
-            <p>&copy; 2025 Secure File Download. All rights reserved.</p>
+            <p>&copy; 2025 Unlimited Money Limited LLC. All rights reserved.</p>
         </div>
     </footer>
     
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+    <!-- Firebase SDKs - Using version 8.x for compatibility -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <!-- App scripts - flat structure -->
     <script src="auth.js"></script>
@@ -83,6 +83,76 @@
         .btn-google:hover {
             background: #3367D6;
         }
+        
+        /* Debug console */
+        #debug-console {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: rgba(0,0,0,0.8);
+            color: #2ecc71;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 10px;
+            overflow-y: auto;
+            z-index: 9999;
+            display: none;
+        }
     </style>
+    
+    <!-- Debug console for troubleshooting -->
+    <div id="debug-console"></div>
+    
+    <script>
+        // Helper for debugging
+        function debugLog(message) {
+            const debug = document.getElementById('debug-console');
+            debug.style.display = 'block';
+            const logEntry = document.createElement('div');
+            logEntry.textContent = new Date().toISOString().substr(11, 8) + ': ' + message;
+            debug.appendChild(logEntry);
+            debug.scrollTop = debug.scrollHeight;
+            console.log(message);
+        }
+        
+        // Show debug console in development
+        document.addEventListener('keydown', function(e) {
+            // Press D key to toggle debug console
+            if (e.key === 'd' && e.ctrlKey) {
+                const debug = document.getElementById('debug-console');
+                debug.style.display = debug.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+        
+        // Additional event listener as a fallback
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginBtn = document.getElementById('google-login');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function() {
+                    debugLog('Login button clicked via inline handler');
+                    const provider = new firebase.auth.GoogleAuthProvider();
+                    
+                    // Show login status
+                    const loginStatus = document.getElementById('login-status');
+                    if (loginStatus) loginStatus.classList.remove('hidden');
+                    
+                    firebase.auth().signInWithPopup(provider).then(function(result) {
+                        debugLog('Google sign-in successful');
+                        window.location.href = 'download.html';
+                    }).catch(function(error) {
+                        debugLog('Error: ' + error.message);
+                        if (error.code === 'auth/popup-blocked') {
+                            debugLog('Popup blocked, trying redirect');
+                            firebase.auth().signInWithRedirect(provider);
+                        }
+                    });
+                });
+            } else {
+                debugLog('Login button not found!');
+            }
+        });
+    </script>
 </body>
 </html>
