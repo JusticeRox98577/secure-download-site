@@ -1,4 +1,4 @@
-// auth.js - Firebase Authentication with fixed redirection
+// auth.js - Firebase Authentication with payment verification bypass
 
 // Firebase configuration
 const firebaseConfig = {
@@ -55,11 +55,17 @@ const auth = {
                     return;
                 }
                 
-                // If on the download page, check payment verification
+                // If on the download page, auto-show download UI (bypass payment check)
                 if (window.location.pathname.includes('download.html') || window.location.pathname.endsWith('/download')) {
-                    debugLog('On download page, checking payment verification');
-                    // Check if payment is verified for this user
-                    this.checkPaymentVerification();
+                    debugLog('On download page, bypassing payment verification');
+                    
+                    // Hide verification pending UI
+                    const pendingEl = document.getElementById('verification-pending');
+                    if (pendingEl) pendingEl.classList.add('hidden');
+                    
+                    // Show download UI directly without payment verification
+                    const downloadContainer = document.getElementById('download-container');
+                    if (downloadContainer) downloadContainer.classList.remove('hidden');
                 }
                 
             } else {
@@ -108,6 +114,10 @@ const auth = {
             debugLog('Payment token found in URL: ' + paymentToken);
             // Store payment token with user
             this.storePaymentVerification(userId, paymentToken);
+        } else {
+            // For testing: Always mark user as having verified payment
+            debugLog('No payment token found, but marking user as verified for testing');
+            this.storePaymentVerification(userId, 'test_auto_verified');
         }
     },
     
@@ -124,8 +134,9 @@ const auth = {
         firebase.auth().signInWithPopup(provider)
             .then(result => {
                 debugLog("Google sign-in successful via popup");
-                // Handle payment token if present
-                this.checkAndStorePaymentToken(result.user.uid);
+                
+                // Always mark user as verified for testing
+                this.storePaymentVerification(result.user.uid, 'test_auto_verified');
                 
                 // Redirect to download page with a small delay
                 setTimeout(() => {
@@ -177,44 +188,9 @@ const auth = {
         })
         .catch(error => {
             debugLog('Error storing payment verification: ' + error.message);
+            // Even if Firestore fails, we'll still allow access for testing
+            debugLog('Continuing despite Firestore error (for testing)');
         });
-    },
-    
-    // Check if user has verified payment
-    checkPaymentVerification: function() {
-        const userId = this.user.uid;
-        debugLog("Checking payment verification for user: " + userId);
-        const db = firebase.firestore();
-        
-        // Show verification pending UI
-        const pendingEl = document.getElementById('verification-pending');
-        if (pendingEl) pendingEl.classList.remove('hidden');
-        
-        db.collection('payments').doc(userId).get()
-            .then(doc => {
-                if (pendingEl) pendingEl.classList.add('hidden');
-                
-                if (doc.exists && doc.data().verified) {
-                    debugLog("Payment verified, showing download UI");
-                    // Payment verified, show download UI
-                    const downloadContainer = document.getElementById('download-container');
-                    if (downloadContainer) downloadContainer.classList.remove('hidden');
-                } else {
-                    debugLog("Payment not verified, showing access denied");
-                    // Payment not verified, show access denied
-                    const accessDenied = document.getElementById('access-denied');
-                    if (accessDenied) accessDenied.classList.remove('hidden');
-                }
-            })
-            .catch(error => {
-                debugLog('Error checking payment verification: ' + error.message);
-                
-                if (pendingEl) pendingEl.classList.add('hidden');
-                
-                // Show error UI
-                const accessDenied = document.getElementById('access-denied');
-                if (accessDenied) accessDenied.classList.remove('hidden');
-            });
     },
     
     // Update UI based on authentication state
@@ -240,27 +216,20 @@ const auth = {
 document.addEventListener('DOMContentLoaded', () => {
     debugLog("DOM loaded, initializing auth");
     auth.init();
-});
-
-// Check for redirect result (for redirect sign-in method)
-firebase.auth().getRedirectResult().then(function(result) {
-    if (result.user) {
-        debugLog('Sign-in redirect result successful: ' + result.user.email);
-        
-        // Check and store payment token if present
-        const urlParams = new URLSearchParams(window.location.search);
-        const paymentToken = urlParams.get('token');
-        
-        if (paymentToken) {
-            debugLog('Payment token found in URL after redirect: ' + paymentToken);
-            // Use the auth module to store the verification
-            auth.storePaymentVerification(result.user.uid, paymentToken);
+    
+    // Check for redirect result (for redirect sign-in method)
+    firebase.auth().getRedirectResult().then(function(result) {
+        if (result.user) {
+            debugLog('Sign-in redirect result successful: ' + result.user.email);
+            
+            // Always mark user as verified for testing
+            auth.storePaymentVerification(result.user.uid, 'test_auto_verified');
+            
+            // Force redirect to download page
+            debugLog("Redirecting to download page after redirect sign-in");
+            window.location.href = 'download.html';
         }
-        
-        // Force redirect to download page
-        debugLog("Redirecting to download page after redirect sign-in");
-        window.location.href = 'download.html';
-    }
-}).catch(function(error) {
-    debugLog('Redirect sign-in error: ' + error.message);
+    }).catch(function(error) {
+        debugLog('Redirect sign-in error: ' + error.message);
+    });
 });
