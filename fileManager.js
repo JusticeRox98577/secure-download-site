@@ -3,7 +3,7 @@ const fileManager = {
     fileData: {
         name: 'RPS.py',
         size: '61.28 KB',
-        storageRef: 'files/RPS.p'
+        storageRef: 'files/RPS.py'
     },
     
     init: function() {
