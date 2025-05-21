@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment | Secure File Download</title>
+    <title>Payment | RPS.py Download</title>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Link to stylesheet - UPDATED for flat structure -->
+    <!-- Link to stylesheet - flat structure -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,7 +14,7 @@
     <header class="payment-header">
         <div class="container payment-header-content">
             <h1>Secure Payment</h1>
-            <p>Complete your payment to access premium content</p>
+            <p>Complete your payment to access Neural Rock Paper Scissors</p>
         </div>
     </header>
 
@@ -28,9 +28,9 @@
                 <div class="payment-option selected">
                     <div class="payment-header-row">
                         <h3>Premium File Access</h3>
-                        <span class="payment-price">$19.99</span>
+                        <span class="payment-price">$5.99</span>
                     </div>
-                    <p class="payment-description">Get instant access to our premium files with this one-time payment.</p>
+                    <p class="payment-description">Get instant access to Neural Rock Paper Scissors with this one-time payment.</p>
                     
                     <div class="payment-features">
                         <div class="payment-feature">
@@ -92,10 +92,12 @@
         </div>
     </footer>
     
-    <!-- JavaScript - UPDATED for flat structure -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+    <!-- Firebase SDKs - Using version 8.x for compatibility -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- App scripts - flat structure -->
     <script src="auth.js"></script>
     <script src="payment.js"></script>
 
@@ -196,10 +198,13 @@
     <script>
         // Additional JavaScript for payment page interactions
         document.addEventListener('DOMContentLoaded', function() {
+            console.log("Payment page loaded");
+            
             // Payment method selection
             const paymentMethods = document.querySelectorAll('.payment-method');
             paymentMethods.forEach(method => {
                 method.addEventListener('click', function() {
+                    console.log("Payment method selected: " + this.getAttribute('data-method'));
                     // Remove selected class from all methods
                     paymentMethods.forEach(m => m.classList.remove('selected'));
                     // Add selected class to clicked method
