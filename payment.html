@@ -5,23 +5,259 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment | Secure File Download</title>
     <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Additional styles specific to payment page */
+        .payment-header {
+            background: linear-gradient(135deg, #1a365d 0%, #0061a7 100%);
+            color: white;
+            padding: 2rem 0;
+            border-bottom: 5px solid #0056b3;
+        }
+        
+        .payment-container {
+            max-width: 600px;
+            margin: 3rem auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .payment-header-content {
+            text-align: center;
+        }
+        
+        .payment-title {
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .payment-body {
+            padding: 2rem;
+        }
+        
+        .payment-option {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-option:hover {
+            border-color: #3498db;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.1);
+        }
+        
+        .payment-option.selected {
+            border-color: #2ecc71;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.1);
+            background-color: rgba(46, 204, 113, 0.05);
+        }
+        
+        .payment-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .payment-option h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        
+        .payment-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .payment-description {
+            color: #7f8c8d;
+            margin-bottom: 1.5rem;
+        }
+        
+        .payment-features {
+            margin-bottom: 1.5rem;
+        }
+        
+        .payment-feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            color: #7f8c8d;
+        }
+        
+        .payment-feature i {
+            color: #2ecc71;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+        
+        #payment-status {
+            text-align: center;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        
+        .payment-actions {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            color: #7f8c8d;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .back-link i {
+            margin-right: 5px;
+        }
+        
+        .back-link:hover {
+            color: #3498db;
+        }
+        
+        .payment-methods {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .payment-method {
+            padding: 0.75rem 1rem;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-method:hover {
+            border-color: #3498db;
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        .payment-method.selected {
+            border-color: #2ecc71;
+            background-color: rgba(46, 204, 113, 0.05);
+        }
+        
+        .payment-method i {
+            margin-right: 8px;
+            font-size: 1.25rem;
+        }
+        
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #3498db;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+            display: inline-block;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
+    <!-- Simple Header -->
+    <header class="payment-header">
+        <div class="container payment-header-content">
+            <h1>Secure Payment</h1>
+            <p>Complete your payment to access premium content</p>
+        </div>
+    </header>
+
     <div class="container">
-        <h1>Payment</h1>
-        <p>Complete your payment to access the file.</p>
-        <div id="payment-container">
-            <!-- Payment options will be loaded here -->
-            <div class="payment-option">
-                <h3>Premium File Access</h3>
-                <p>Price: $XX.XX</p>
-                <button id="payment-button" class="btn">Pay Now</button>
+        <div class="payment-container">
+            <div class="payment-title">
+                <h2>Payment Details</h2>
+            </div>
+            
+            <div class="payment-body">
+                <div class="payment-option selected">
+                    <div class="payment-header-row">
+                        <h3>Premium File Access</h3>
+                        <span class="payment-price">$19.99</span>
+                    </div>
+                    <p class="payment-description">Get instant access to our premium files with this one-time payment.</p>
+                    
+                    <div class="payment-features">
+                        <div class="payment-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Instant download access</span>
+                        </div>
+                        <div class="payment-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Secure Google authentication</span>
+                        </div>
+                        <div class="payment-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>High-quality premium content</span>
+                        </div>
+                        <div class="payment-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>24/7 download availability</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>Select Payment Method</h3>
+                <div class="payment-methods">
+                    <div class="payment-method selected" data-method="credit-card">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Credit Card</span>
+                    </div>
+                    <div class="payment-method" data-method="paypal">
+                        <i class="fab fa-paypal"></i>
+                        <span>PayPal</span>
+                    </div>
+                </div>
+                
+                <div id="payment-status" class="hidden">
+                    <div class="loader"></div>
+                    <p>Processing your payment...</p>
+                </div>
+                
+                <div class="payment-actions">
+                    <a href="index.html" class="back-link">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Home
+                    </a>
+                    <button id="payment-button" class="btn">Pay $19.99 Now</button>
+                </div>
             </div>
         </div>
-        <div id="payment-status" class="hidden">
-            <p>Processing payment...</p>
-        </div>
     </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Terms of Service</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Contact Us</a>
+            </div>
+            <p>&copy; 2025 Secure File Download. All rights reserved.</p>
+        </div>
+    </footer>
     
     <!-- In production, load these scripts from CDN -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
@@ -29,5 +265,34 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/payment.js"></script>
+    <script>
+        // Additional JavaScript for payment page interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Payment method selection
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', function() {
+                    // Remove selected class from all methods
+                    paymentMethods.forEach(m => m.classList.remove('selected'));
+                    // Add selected class to clicked method
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Payment button click handler (in addition to the one in payment.js)
+            const paymentButton = document.getElementById('payment-button');
+            if (paymentButton) {
+                paymentButton.addEventListener('click', function() {
+                    // Show payment status with loader
+                    const paymentStatus = document.getElementById('payment-status');
+                    if (paymentStatus) {
+                        paymentStatus.classList.remove('hidden');
+                    }
+                    
+                    // The actual payment processing will be handled by payment.js
+                });
+            }
+        });
+    </script>
 </body>
 </html>
