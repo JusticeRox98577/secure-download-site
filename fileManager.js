@@ -1,5 +1,7 @@
+// fileManager.js - File Access Control
+
 const fileManager = {
-    // Current file data
+    // Current file data - update with your actual file info
     fileData: {
         name: 'RPS.py',
         size: '61.28 KB',
@@ -7,10 +9,15 @@ const fileManager = {
     },
     
     init: function() {
+        console.log("FileManager initialization started");
+        
         // Set up download button
         const downloadBtn = document.getElementById('download-btn');
         if (downloadBtn) {
+            console.log("Download button found, adding event listener");
             downloadBtn.addEventListener('click', () => this.downloadFile());
+        } else {
+            console.log("Download button not found on this page");
         }
         
         // Update file info in UI
@@ -28,12 +35,17 @@ const fileManager = {
     
     // Download file from Firebase Storage
     downloadFile: function() {
+        console.log("Download file requested");
+        
         // Check if user is authenticated
         if (!auth.user) {
+            console.log("User not authenticated, redirecting to login");
             alert('You must be signed in to download this file');
             window.location.href = 'login.html';
             return;
         }
+        
+        console.log("User authenticated, getting file from storage");
         
         // Reference to the file in Firebase Storage
         const storageRef = firebase.storage().ref(this.fileData.storageRef);
@@ -41,6 +53,8 @@ const fileManager = {
         // Get download URL
         storageRef.getDownloadURL()
             .then(url => {
+                console.log("Download URL obtained: ", url.substring(0, 20) + "...");
+                
                 // Log download event to Firestore (optional)
                 this.logDownload(auth.user.uid);
                 
@@ -51,15 +65,18 @@ const fileManager = {
                 document.body.appendChild(downloadLink);
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
+                
+                console.log("Download triggered");
             })
             .catch(error => {
                 console.error('Error getting download URL:', error);
-                alert('Error downloading file. Please try again.');
+                alert('Error downloading file: ' + error.message + '. Please try again.');
             });
     },
     
     // Log download in Firestore
     logDownload: function(userId) {
+        console.log("Logging download for user: ", userId);
         const db = firebase.firestore();
         
         db.collection('downloads').add({
@@ -78,5 +95,6 @@ const fileManager = {
 
 // Initialize file manager when document is ready
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM loaded, initializing file manager");
     fileManager.init();
 });
